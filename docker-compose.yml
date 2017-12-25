@@ -1,0 +1,124 @@
+version: '3.3'
+services:
+  orientdb:
+    build:
+      context: OrientDB
+      dockerfile: Dockerfile
+#    ports:
+#      - "2424:2424"
+#      - "2480:2480"
+    restart: always
+    env_file:
+      - OrientDB/.env
+    networks:
+      - database-network
+      - database-ui-network
+
+  mariadb:
+    build:
+      context: ./MariaDB
+      dockerfile: Dockerfile
+#    ports:
+#      - "3306:3306"
+    restart: always
+    env_file:
+      - ./MariaDB/.env
+    networks:
+      - database-network
+
+  redis:
+    build:
+      context: ./Redis
+      dockerfile: Dockerfile
+#    ports:
+#      - "6379:6379"
+    restart: always
+    env_file:
+      - ./Redis/.env
+    networks:
+      - database-network
+
+  nodejs:
+    build:
+      context: ./NodeJS
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - nginx
+    env_file:
+      - ./NodeJS/.env
+    networks:
+      - backend-network
+      - frontend-network
+      - database-network
+
+  python:
+    build:
+      context: ./Python
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./source/python/src:/usr/src/app
+    depends_on:
+    - nginx
+    - orientdb
+    env_file:
+      - ./Python/.env
+    networks:
+      - backend-network
+      - frontend-network
+      - database-network
+
+  adminer:
+    build:
+      context: ./Adminer
+      dockerfile: Dockerfile
+#    ports:
+#    - "8081:8080"
+    restart: always
+    env_file:
+    - ./Adminer/.env
+    depends_on:
+    - mariadb
+    - nginx
+    networks:
+      - database-ui-network
+      - database-network
+
+  nginx:
+    build:
+      context: Nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    restart: always
+    env_file:
+      - Nginx/.env
+    networks:
+      - proxy-network
+      - frontend-network
+      - database-ui-network
+
+networks:
+#   All Database
+  database-network:
+    driver: bridge
+    internal: true
+#   All Database UI
+  database-ui-network:
+    driver: bridge
+    internal: true
+#   All Backend Application (API's)
+  backend-network:
+    driver: bridge
+    internal: true
+#   All Frontend Application
+  frontend-network:
+   driver: bridge
+   internal: true
+#   Proxy server
+  proxy-network:
+    driver: bridge
+
