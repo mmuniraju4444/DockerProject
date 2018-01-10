@@ -1,2 +1,5 @@
-flask
+beautifulsoup4
+html5lib
 redis
+flask
+pyorient

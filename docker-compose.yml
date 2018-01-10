@@ -43,8 +43,8 @@ services:
       context: ./NodeJS
       dockerfile: Dockerfile
     restart: always
-    depends_on:
-      - nginx
+#    depends_on:
+#      - nginx
     env_file:
       - ./NodeJS/.env
     networks:
@@ -61,13 +61,14 @@ services:
       - ./source/python/src:/usr/src/app
     depends_on:
     - nginx
-    - orientdb
+#    - orientdb
     env_file:
       - ./Python/.env
     networks:
       - backend-network
       - frontend-network
       - database-network
+      - internet
 
   adminer:
     build:
@@ -77,10 +78,10 @@ services:
 #    - "8081:8080"
     restart: always
     env_file:
-    - ./Adminer/.env
+      - ./Adminer/.env
     depends_on:
     - mariadb
-    - nginx
+#    - nginx
     networks:
       - database-ui-network
       - database-network
@@ -120,5 +121,8 @@ networks:
    internal: true
 #   Proxy server
   proxy-network:
+    driver: bridge
+# Internet Network
+  internet:
     driver: bridge
 
