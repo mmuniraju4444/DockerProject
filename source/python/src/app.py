@@ -6,6 +6,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 #import redis
 from flask import Flask
+from helper import config
 #import pyorient
 
 
@@ -65,10 +66,11 @@ def diesel():
 @app.route('/')
 def fuel():
     # count = get_hit_count()
-    petrol_json = petrol()
-    diesel_json = diesel()
-
-    return [petrol_json,diesel_json].__str__()
+    #petrol_json = petrol()
+    #diesel_json = diesel()
+    data = config.read_config("database.mysql")
+    return data.__str__()
+    #return [petrol_json,diesel_json].__str__()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
