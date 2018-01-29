@@ -38,6 +38,21 @@ services:
     networks:
       - database-network
 
+  vuejs:
+    build:
+      context: ./Vuejs
+      dockerfile: Dockerfile
+#    restart: always
+    volumes:
+      - ./source/vuejs:/usr/src/app
+    depends_on:
+    - nginx
+    env_file:
+      - ./Vuejs/.env
+    networks:
+      - backend-network
+      - frontend-network
+
   nodejs:
     build:
       context: ./NodeJS
